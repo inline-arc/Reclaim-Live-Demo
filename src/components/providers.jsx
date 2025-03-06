@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import * as Dialog from "@radix-ui/react-dialog"
-import * as Separator from "@radix-ui/react-separator"
+import QRCodeDisplay from "./qr-code"
 import * as Toast from "@radix-ui/react-toast"
+
 import {
   Search,
   QrCode,
@@ -20,6 +20,8 @@ import {
   Linkedin,
   Twitter,
   User,
+  ScanLine,
+  Info,
 } from "lucide-react"
 
 const VerificationPlatform = () => {
@@ -118,25 +120,26 @@ const VerificationPlatform = () => {
 
 
   return (
+    <>
     <div className="flex min-h-screen bg-[#f8f9fa]">
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Navigation */}
-        <header className="bg-white border-b sticky top-0 z-10">
-          <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <header className="bg-white border-w sticky top-0 z-10">
+          <div className="container px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="md:hidden w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                <QrCode size={20} className="text-white" />
+              <div className="w-12 gap-2 flex items-center ">
+                  <img src="https://reclaimprotocol.notion.site/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fa286e6c7-2514-47c8-a776-44b02bb2aa86%2F4342ccfd-3218-4aa8-9bb4-2081161edb3d%2FReclaim_logo_New.jpg?table=block&id=13c275b8-16cb-80b1-a5ad-e76c6f2532dd&spaceId=a286e6c7-2514-47c8-a776-44b02bb2aa86&width=250&userId=&cache=v2"/>
               </div>
-              <h1 className="text-xl font-bold">Verification Platform</h1>
+              <h1 className="text-xl font-bold"> Live Playground</h1>
             </div>
 
             <div className="flex items-center gap-4">
-              <button className="px-4 py-2 rounded-full border border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors">
+              <button className="px-4 py-2 rounded-full border border-slate-800 text-slate-800 hover:bg-blue-50 transition-colors">
                 Documentation
               </button>
-              <button className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+              <button className="px-4 py-2 rounded-full bg-slate-800 text-white hover:bg-slate-800 transition-colors">
                 Talk to our team
               </button>
             </div>
@@ -219,79 +222,8 @@ const VerificationPlatform = () => {
           </div>
 
           {/* QR Code Container */}
-          <Separator.Root
-            className="bg-gray-200 data-[orientation=vertical]:h-auto data-[orientation=vertical]:w-[1px]"
-            orientation="vertical"
-          />
-
-          <div className="w-full md:w-80 p-6 bg-white border-l flex flex-col">
-            <div className="text-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Verification QR</h2>
-              <p className="text-sm text-gray-500">Scan to verify your identity</p>
-            </div>
-
-            <div className="bg-gray-50 border rounded-lg p-6 flex items-center justify-center mb-4 aspect-square">
-              <div className="flex flex-col items-center justify-center">
-                <QrCode size={180} className="text-blue-600" />
-                <p className="mt-4 text-sm text-gray-500">QR Code for Verification</p>
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Verification URL</label>
-              <div className="flex">
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="flex-1 rounded-l-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  readOnly
-                />
-                <button
-                  onClick={copyToClipboard}
-                  className="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-500 hover:bg-gray-100"
-                >
-                  {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-auto">
-              <Dialog.Root>
-                <Dialog.Trigger asChild>
-                  <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                    Start Verification
-                  </button>
-                </Dialog.Trigger>
-                <Dialog.Portal>
-                  <Dialog.Overlay className="fixed inset-0 bg-black/50 data-[state=open]:animate-overlayShow" />
-                  <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none data-[state=open]:animate-contentShow">
-                    <Dialog.Title className="text-lg font-bold">Verification Process</Dialog.Title>
-                    <Dialog.Description className="mt-2 text-sm text-gray-500">
-                      Follow these steps to complete your verification.
-                    </Dialog.Description>
-
-                    <div className="mt-4 space-y-3">
-                      <p className="text-sm">1. Scan the QR code with your mobile device</p>
-                      <p className="text-sm">2. Follow the instructions on your device</p>
-                      <p className="text-sm">3. Wait for the verification to complete</p>
-                    </div>
-
-                    <Dialog.Close asChild>
-                      <button
-                        className="absolute top-4 right-4 inline-flex items-center justify-center w-8 h-8 rounded-full text-gray-500 hover:bg-gray-100"
-                        aria-label="Close"
-                      >
-                        <X size={16} />
-                      </button>
-                    </Dialog.Close>
-                  </Dialog.Content>
-                </Dialog.Portal>
-              </Dialog.Root>
-            </div>
+            <QRCodeDisplay/>
           </div>
-        </div>
-      </div>
 
       {/* Toast Notification */}
       <Toast.Provider swipeDirection="right">
@@ -316,7 +248,9 @@ const VerificationPlatform = () => {
         </Toast.Root>
         <Toast.Viewport className="fixed bottom-0 right-0 flex flex-col p-6 gap-2 w-[390px] max-w-[100vw] m-0 list-none z-50 outline-none" />
       </Toast.Provider>
-    </div>
+          </div>
+        </div>
+    </>
   )
 }
 
