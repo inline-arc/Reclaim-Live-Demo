@@ -1,5 +1,9 @@
- 
-  const dataproviders =[
+import { Github, Mail, User, Linkedin, Twitter } from 'lucide-react';
+import React from 'react';
+
+
+
+const dataProviders =[
     {
       id: 1,
       name: "GitHub UserName",
@@ -82,4 +86,4 @@
     },
   ]
 
-  export default dataproviders();
+  export default dataProviders;
