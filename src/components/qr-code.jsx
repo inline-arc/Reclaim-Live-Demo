@@ -1,53 +1,63 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import * as Dialog from "@radix-ui/react-dialog"
-import * as Separator from "@radix-ui/react-separator"
-import QRCode from "react-qr-code"
-import { ReclaimProofRequest } from '@reclaimprotocol/js-sdk';
-import { Copy, X, Info, Check } from "lucide-react"
+import { useState } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import * as Separator from "@radix-ui/react-separator";
+import QRCode from "react-qr-code";
+import { ReclaimProofRequest } from "@reclaimprotocol/js-sdk";
+import { Copy, X, Info, Check } from "lucide-react";
+import { useProvider } from "./context/useProvider";
 
 const QRCodeDisplay = () => {
-  const [url, setUrl] = useState("https://example.com/share/abc123")
-  const [requestUrl, setRequestUrl] = useState("")
+  const [requestUrl, setRequestUrl] = useState("");
   const [proofs, setProofs] = useState([]);
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
+  const latestproviderId = useProvider((state) => state.providerId);
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  if (!latestproviderId) {
+    return (
+      <div className="text-center text-red-500 font-semibold">
+        Error: Provider ID is missing!
+      </div>
+    );
   }
 
-  const getVerficationReq = async () => {
-    const APP_ID = import.meta.env.VITE_APP_ID;
-    console.log(import.meta.env.VITE_APP_ID);
-    const APP_SECRET = import.meta.env.VITE_APP_SECRET;
-    const PROVIDER_ID = import.meta.env.VITE_PROVIDER_ID;
+  const copyToClipboard = () => {
+    if (requestUrl) {
+      navigator.clipboard.writeText(requestUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
-    const reclaimProofRequest = await ReclaimProofRequest.init(APP_ID, APP_SECRET, PROVIDER_ID);
-    const requestUrl = await reclaimProofRequest.getRequestUrl();
-    console.log(requestUrl);
-    setRequestUrl(requestUrl);
+  const getVerificationReq = async () => {
+    try {
+      const APP_ID = import.meta.env.VITE_APP_ID;
+      const APP_SECRET = import.meta.env.VITE_APP_SECRET;
+      const PROVIDER_ID = latestproviderId;
 
-    await reclaimProofRequest.startSession({
-      onSuccess: (proofs) => {
-        setProofs(proofs);
-        console.log(proofs);
-      },
-      onError: (error) => {
-        console.error(error);
-      },
-    });
+      const reclaimProofRequest = await ReclaimProofRequest.init(APP_ID, APP_SECRET, PROVIDER_ID);
+      const url = await reclaimProofRequest.getRequestUrl();
+      setRequestUrl(url);
+
+      await reclaimProofRequest.startSession({
+        onSuccess: (proofs) => {
+          setProofs(proofs);
+          console.log("Verification Proofs:", proofs);
+        },
+        onError: (error) => {
+          console.error("Verification Error:", error);
+        },
+      });
+    } catch (error) {
+      console.error("Failed to initiate verification request:", error);
+    }
   };
 
   return (
     <>
-      <Separator.Root
-        className="bg-slate-200 data-[orientation=vertical]:h-auto data-[orientation=vertical]:w-[1px]"
-        orientation="vertical"
-      />
-      <div className="w-full md:w-80 p-6 bg-gray-50 border-w flex flex-col">
+      <Separator.Root className="bg-slate-200 h-auto w-[1px]" orientation="vertical" />
+      <div className="w-full md:w-80 p-6 bg-gray-50 border flex flex-col">
         <div className="text-center mb-2">
           <h2 className="text-xl font-bold text-gray-900">Verification QR</h2>
           <p className="text-sm text-gray-500">Scan to verify your identity</p>
@@ -68,18 +78,19 @@ const QRCodeDisplay = () => {
           <div className="flex">
             <input
               type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="flex-1 rounded-l-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={requestUrl || "Click 'Start Verification' to generate URL"}
               readOnly
+              className="flex-1 rounded-l-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               onClick={copyToClipboard}
               className="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-500 hover:bg-gray-100"
+              disabled={!requestUrl}
             >
               {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
             </button>
           </div>
+
           <div className="bg-gray-50 border rounded-lg p-4 mt-4">
             <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
               <Info size={20} className="text-blue-600" />
@@ -96,15 +107,15 @@ const QRCodeDisplay = () => {
           <Dialog.Root>
             <Dialog.Trigger asChild>
               <button
-                className="w-full px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-blue-700 transition-colors"
-                onClick={getVerficationReq}
+                className="w-full px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors"
+                onClick={getVerificationReq}
               >
                 Start Verification
               </button>
             </Dialog.Trigger>
             <Dialog.Portal>
               <Dialog.Overlay className="fixed inset-0 bg-black/50 data-[state=open]:animate-overlayShow" />
-              <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none data-[state=open]:animate-contentShow">
+              <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none">
                 <Dialog.Title className="text-lg font-bold">Verification Process</Dialog.Title>
                 <Dialog.Description className="mt-2 text-sm text-gray-500">
                   Follow these steps to complete your verification.

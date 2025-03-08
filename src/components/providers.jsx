@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import QRCodeDisplay from "./qr-code"
 import * as Toast from "@radix-ui/react-toast"
 import dataProvider from "../metadata.jsx";
+import { useProvider } from "./context/useProvider.jsx";
 import {
   Search,
   QrCode,
@@ -26,7 +27,9 @@ import {
 
 const VerificationPlatform = () => {
   const [url, setUrl] = useState("https://example.com/verify/abc123")
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
+
+  const setProviderId = useProvider((state) => state.setProviderId); //set
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(url)
@@ -125,7 +128,12 @@ const VerificationPlatform = () => {
                           <Users size={14} />
                           <span>{provider.users}</span>
                         </div>
-                        <button className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-200 text-sm font-medium hover:bg-gray-50">
+                        <button
+                          onClick={() => {
+                            setProviderId(String(provider.providerId));
+                            console.log(provider.providerId);
+                          }}
+                          className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-200 text-sm font-medium hover:bg-gray-50">
                           <User size={14} />
                           Try Now
                         </button>

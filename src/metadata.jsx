@@ -13,6 +13,7 @@ const dataProviders =[
       users: 386,
       active: true,
       verified: true,
+      providerId: "6d3f6753-7ee6-49ee-a545-62f1b1822ae5",
     },
     {
       id: 2,
@@ -23,6 +24,7 @@ const dataProviders =[
       users: 192,
       active: true,
       verified: true,
+      providerId: "f9f383fd-32d9-4c54-942f-5e9fda349762",
     },
     {
       id: 3,
@@ -33,6 +35,7 @@ const dataProviders =[
       users: 85,
       active: true,
       verified: true,
+      providerId: "2b22db5c-78d9-4d82-84f0-a9e0a4ed0470",
     },
     {
       id: 4,
@@ -43,6 +46,7 @@ const dataProviders =[
       users: 84,
       active: true,
       verified: true,
+      providerId: "a9f1063c-06b7-476a-8410-9ff6e427e637",
     },
     {
       id: 5,
@@ -53,6 +57,7 @@ const dataProviders =[
       users: 51,
       active: true,
       verified: true,
+      providerId: "71901e6a-0548-414f-affb-c60d66e9648g",
     },
     {
       id: 6,
