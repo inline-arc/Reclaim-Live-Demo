@@ -2,14 +2,15 @@
 
 import { useState } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
-import * as Tabs from "@radix-ui/react-tabs"
-import * as Toast from "@radix-ui/react-toast"
 import * as Separator from "@radix-ui/react-separator"
-import { QrCode, Copy, X, Info, Check , ScanLine} from "lucide-react"
+import QRCode from "react-qr-code"
+import { ReclaimProofRequest } from '@reclaimprotocol/js-sdk';
+import { Copy, X, Info, Check } from "lucide-react"
 
 const QRCodeDisplay = () => {
   const [url, setUrl] = useState("https://example.com/share/abc123")
-  const [open, setOpen] = useState(false)
+  const [requestUrl, setRequestUrl] = useState("")
+  const [proofs, setProofs] = useState([]);
   const [copied, setCopied] = useState(false)
 
   const copyToClipboard = () => {
@@ -18,31 +19,60 @@ const QRCodeDisplay = () => {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const getVerficationReq = async () => {
+    const APP_ID = import.meta.env.VITE_APP_ID;
+    console.log(import.meta.env.VITE_APP_ID);
+    const APP_SECRET = import.meta.env.VITE_APP_SECRET;
+    const PROVIDER_ID = import.meta.env.VITE_PROVIDER_ID;
+
+    const reclaimProofRequest = await ReclaimProofRequest.init(APP_ID, APP_SECRET, PROVIDER_ID);
+    const requestUrl = await reclaimProofRequest.getRequestUrl();
+    console.log(requestUrl);
+    setRequestUrl(requestUrl);
+
+    await reclaimProofRequest.startSession({
+      onSuccess: (proofs) => {
+        setProofs(proofs);
+        console.log(proofs);
+      },
+      onError: (error) => {
+        console.error(error);
+      },
+    });
+  };
+
   return (
-    <><Separator.Root
-      className="bg-slate-200 data-[orientation=vertical]:h-auto data-[orientation=vertical]:w-[1px]"
-      orientation="vertical" /><div className="w-full md:w-80 p-6 bg-gray-50 border-w flex flex-col">
+    <>
+      <Separator.Root
+        className="bg-slate-200 data-[orientation=vertical]:h-auto data-[orientation=vertical]:w-[1px]"
+        orientation="vertical"
+      />
+      <div className="w-full md:w-80 p-6 bg-gray-50 border-w flex flex-col">
         <div className="text-center mb-2">
           <h2 className="text-xl font-bold text-gray-900">Verification QR</h2>
           <p className="text-sm text-gray-500">Scan to verify your identity</p>
         </div>
 
         <div className="bg-gray-50 border rounded-lg p-6 flex items-center justify-center mb-4 aspect-square">
-          <div className="flex flex-col items-center justify-center">
-            <ScanLine size={180} className="text-slate-800" />
-            <p className="mt-4 text-sm text-gray-500">QR Code for Verification</p>
-          </div>
+          {requestUrl ? (
+            <QRCode value={requestUrl} size={180} />
+          ) : (
+            <p className="text-gray-500 text-sm">Generate a QR code</p>
+          )}
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Verification URL</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Verification URL
+          </label>
           <div className="flex">
             <input
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               className="flex-1 rounded-l-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              readOnly />
+              readOnly
+            />
             <button
               onClick={copyToClipboard}
               className="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-500 hover:bg-gray-100"
@@ -65,7 +95,10 @@ const QRCodeDisplay = () => {
         <div className="mt-auto">
           <Dialog.Root>
             <Dialog.Trigger asChild>
-              <button className="w-full px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-blue-700 transition-colors">
+              <button
+                className="w-full px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-blue-700 transition-colors"
+                onClick={getVerficationReq}
+              >
                 Start Verification
               </button>
             </Dialog.Trigger>
@@ -95,9 +128,9 @@ const QRCodeDisplay = () => {
             </Dialog.Portal>
           </Dialog.Root>
         </div>
-      </div></>
-  )
-}
+      </div>
+    </>
+  );
+};
 
 export default QRCodeDisplay;
-
