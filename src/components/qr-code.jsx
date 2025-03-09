@@ -14,14 +14,6 @@ const QRCodeDisplay = () => {
   const [copied, setCopied] = useState(false);
   const latestproviderId = useProvider((state) => state.providerId);
 
-  if (!latestproviderId) {
-    return (
-      <div className="text-center text-red-500 font-semibold">
-        Error: Provider ID is missing!
-      </div>
-    );
-  }
-
   const copyToClipboard = () => {
     if (requestUrl) {
       navigator.clipboard.writeText(requestUrl);
@@ -39,6 +31,7 @@ const QRCodeDisplay = () => {
       const reclaimProofRequest = await ReclaimProofRequest.init(APP_ID, APP_SECRET, PROVIDER_ID);
       const url = await reclaimProofRequest.getRequestUrl();
       setRequestUrl(url);
+      setCopied(requestUrl ? false : copied);
 
       await reclaimProofRequest.startSession({
         onSuccess: (proofs) => {
@@ -57,7 +50,7 @@ const QRCodeDisplay = () => {
   return (
     <>
       <Separator.Root className="bg-slate-200 h-auto w-[1px]" orientation="vertical" />
-      <div className="w-full md:w-80 p-6 bg-gray-50 border flex flex-col">
+      <div className="w-full md:w-80 p-6 bg-gray-50 flex flex-col">
         <div className="text-center mb-2">
           <h2 className="text-xl font-bold text-gray-900">Verification QR</h2>
           <p className="text-sm text-gray-500">Scan to verify your identity</p>
@@ -93,12 +86,11 @@ const QRCodeDisplay = () => {
 
           <div className="bg-gray-50 border rounded-lg p-4 mt-4">
             <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
-              <Info size={20} className="text-blue-600" />
+              <Info size={20} className="text-slate-800" />
               Instructions
-            </h3>
-            <p className="text-sm text-gray-600">
-              Scan the QR code with your mobile device to start the verification process. Follow the on-screen
-              instructions to complete your verification.
+            </h3> 
+            <p className="text-sm text-gray-600 text-left">
+              Scan the QR code with your mobile device to start the verification process. Or Copy the URL
             </p>
           </div>
         </div>
@@ -107,7 +99,7 @@ const QRCodeDisplay = () => {
           <Dialog.Root>
             <Dialog.Trigger asChild>
               <button
-                className="w-full px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors"
+                className="w-full px-4 py-2 bg-slate-800 text-white rounded-md hover:bg-blue-800 transition-colors"
                 onClick={getVerificationReq}
               >
                 Start Verification

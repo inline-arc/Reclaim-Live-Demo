@@ -1,4 +1,4 @@
-import { Github, Mail, User, Linkedin, Twitter } from 'lucide-react';
+import { Github, Mail, User, Linkedin, Twitter, Instagram } from 'lucide-react';
 import React from 'react';
 
 
@@ -61,33 +61,36 @@ const dataProviders =[
     },
     {
       id: 6,
-      name: "identity_github00",
-      description: "Prove your GitHub User Name",
+      name: "Nykaa Order History",
+      description: "Get Nykaa Orders History (android & ios)",
       icon: <Github size={24} />,
-      logo: "https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png",
+      logo: "data:image/jpeg;base64,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",
       users: 42,
       active: true,
       verified: true,
+      providerId:"43a0b71f-bd25-4f10-bbad-9541961df72e",
     },
     {
       id: 7,
-      name: "Twitter User Profile",
-      description: "Verifies twitter profile of user",
-      icon: <Twitter size={24} />,
-      logo: "https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png",
+      name: "Instagram Followers",
+      description: "Instagram Followers Count",
+      icon: <Instagram size={24} />,
+      logo: "https://static.xx.fbcdn.net/rsrc.php/v4/yx/r/tBxa1IFcTQH.png",
       users: 39,
       active: true,
       verified: true,
+      providerId: "7729ae3e-179c-4ac8-8c5d-4bcd909c864d",
     },
     {
       id: 8,
-      name: "LinkedIn - User Profile Details",
-      description: "Verify user profile details from linkedin",
+      name: "Duolingo Streak",
+      description: "Duolingo Streak & XP",
       icon: <Linkedin size={24} />,
-      logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/800px-LinkedIn_logo_initials.png",
+      logo: "https://design.duolingo.com/86230c9ad10d9f08b785.svg",
       users: 32,
       active: true,
       verified: true,
+      providerId:"e125b894-19de-4259-a3de-023e778da54e",
     },
   ]
 
